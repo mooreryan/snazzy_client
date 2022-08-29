@@ -1,0 +1,6 @@
+(library
+ (name snazzy_client)
+ (public_name snazzy_client)
+ (libraries core async curly uri lambdasoup cohttp-async)
+ (preprocess
+  (pps ppx_jane)))
