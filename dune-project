@@ -2,6 +2,8 @@
 
 (name snazzy_client)
 
+(version 0.1.0-SNAPSHOT)
+
 (generate_opam_files true)
 
 (source

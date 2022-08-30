@@ -4,7 +4,8 @@ open! Async
 let get_redirect_uri response =
   Cohttp.(Response.headers response |> Header.get_location)
 
-let get ?headers ?(timeout = 10.0) ~max_redirects uri =
+(* [max_redirs] is set to 50 by default to match curl *)
+let get ?headers ?(timeout = 10.0) ?(max_redirects = 50) uri =
   let rec loop ~uri ~max_redirects =
     let%bind.Deferred.Or_error ((response, body) as res) =
       Deferred.Or_error.try_with (fun () ->
@@ -43,3 +44,8 @@ let soup (response, body) =
 let get_soup ?headers ?(timeout = 10.0) ~max_redirects uri =
   let%bind.Deferred.Or_error res = get ?headers ~timeout ~max_redirects uri in
   soup res
+
+let download_to_file body ~file_name =
+  let pipe = Cohttp_async.Body.to_pipe body in
+  Writer.with_file file_name ~perm:0o664 ~f:(fun writer ->
+      Pipe.iter pipe ~f:(fun content -> return @@ Writer.write writer content))
